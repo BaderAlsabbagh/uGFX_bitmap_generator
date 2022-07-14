@@ -27,48 +27,48 @@ bool parse_arg(unsigned int argc, char *argv[], char *inputFile, char *outFile, 
     int opt;
     bool isIn = false ,isOut = false;
     while((opt = getopt(argc, argv, "t:i:o:h")) != -1)
-	{
+    {
 		switch(opt)
 		{
-			case 't':
-				
-                *threshold = atoi(optarg);
-				break;
-			case 'i':
-				
-                isIn = true;
-                strcpy(inputFile, optarg);
-				break;
-    		case 'o':
-				
-                isOut = true;
-                strcpy(outFile, optarg);
-				break;
-				case 'h':
-				printf("Example:\n\\a.exe -t 128 -i inputimage.bmp -o outputimage.bmp > output.h\n");
-				printf("-t to choose color threshold from 0 to 255\n");
-				printf("-i choose input image to convert\n");
-				printf("-o choose output image name\n");
-				printf("> *.h to store the bitmap hexadecimal in header file where they can be input to an lcd to print\n");
-				break;
-			case ':':
-				printf("option needs a value\n");
-				break;
-			case '?':
-				printf("unknown option: %c\n write h for help", optopt);
-				break;
+		case 't':		
+        	*threshold = atoi(optarg);
+			if (*threshold > 255) {
+				*threshold = 255;
+			}
+			break;
+		case 'i':		
+           	isIn = true;
+           	strcpy(inputFile, optarg);
+			break;
+		case 'o':	
+           	isOut = true;
+           	strcpy(outFile, optarg);
+			break;
+		case 'h':
+			printf("Example:%s.exe -t 128 -i inputimage.bmp -o outputimage.bmp > output.h\n", argv[0]);
+			printf("-t to choose color threshold from 0 to 255\n");
+			printf("-i choose input image to convert\n");
+			printf("-o choose output image name\n");
+			printf("> *.h to store the bitmap hexadecimal in header file where they can be input to an lcd to print\n");
+			break;
+		case ':':
+			printf("option needs a value\n");
+			break;
+		case '?':
+			printf("unknown option: %c\n write h for help", optopt);
+			break;
 		}
-	}
+    }
 	
-	for(; optind < argc; optind++){	
+    for(; optind < argc; optind++) {	
 		printf("extra arguments: %s\n", argv[optind]);
-	}
+    }
     return (isIn && isOut);
 }
 
 bool image_reader(bmp_img *img, char *file)
 {
-	enum bmp_error err = bmp_img_read (img, file);
+    enum bmp_error err = bmp_img_read (img, file);
     if (BMP_OK != err){
         printf("Error in reading image %d\r\n", err);
         return false;
@@ -105,16 +105,14 @@ void print_page(const uint8_t *pageBytes, int cols, bool printNewLine)
 	for (int i=0; i<cols; i++) {
 		if (i>0 && i%16==0 && printNewLine) {
 				printf("\r\n");
-			}
-		printf("0x%.2x ,", pageBytes[i]);
-			
+		}
+		printf("0x%.2x ,", pageBytes[i]);	
 	}
 	printf("\r\n");
 }
 
 void get_page(const bmp_img *img, int page, int cols, uint8_t *pagebytes) 
 {	
-	
 	int row = page * 8;
 	for (int j=0;j<cols;j++) {
 		pagebytes[j]=getByte(img, row, j);	
@@ -178,7 +176,7 @@ bool image_filter(bmp_img *in_img, bmp_img *out_img, int threshold )
 	//Header File Commands
 	printf("#define HEIGHT = %d;\n", out_img->img_header.biHeight);
 	printf("#define WIDTH = %d;\r\n", out_img->img_header.biWidth);
-	headercmds1(); //Prints codes in header file
+	headercmds1(); 
 	return true;
 }
 
@@ -209,7 +207,6 @@ bool convert_image(char *inputFile, char *outFile, int threshold)
 	for(int i=0; i<pages; i++) {
 		get_page(&saving_img, i, width, bytes);
 		print_page(bytes, width, true);
-		
 	}
 	printf("};\r\n");
 	headercmds2();							//Prints codes in header file
@@ -239,7 +236,6 @@ bool convert_image(char *inputFile, char *outFile, int threshold)
 		printf("BW not reading, try again.\n");
         return 1;
     }
-	
     return 0;
 }
 	
