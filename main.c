@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-
+ 
 #define WHITE 255
 #define BLACK 0
 
