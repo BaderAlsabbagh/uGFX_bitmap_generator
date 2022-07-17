@@ -8,3 +8,4 @@ gcc main.c libbmp.c
 > output.h the hexadecimal array of the converted image will be stored in image_data array of the output header file
 
 
+Special thanks to hasanbfg
